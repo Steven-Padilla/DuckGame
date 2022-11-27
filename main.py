@@ -42,7 +42,9 @@ class Hilo(threading.Thread):
         if pos_target[1].left < 0 or pos_target[1].right > WIDTH:
             speed[0] = -speed[0]
         if pos_target[1].top < 0 or pos_target[1].bottom > HEIGHT -200:
-            speed[1] = -speed[1]         
+            speed[1] = -speed[1] 
+            
+           
         # pos_target[1].center= self.lastTargetX, self.lastTargetY
         # if pos_target[1][0] < 800 :
         #     if pos_target[1][1]>0:
@@ -116,6 +118,8 @@ while run:
     show_gun()
     ducks_list=[]
     duck.run()
+    if shot:
+       shooted = _check_hit(duck, pos_target)
     # for i in range(5):
     #     ducks_list.append(Hilo(i,lastTargetX,lastTargetY))
     #     lastTargetX+=150
@@ -124,5 +128,8 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run =False
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     if (0 < pos_target[0] < WIDTH) and (0 < pos_target[1] < HEIGHT - 200): 
+        #         shot = True  
     pygame.display.update()
 pygame.quit()
