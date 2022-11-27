@@ -21,9 +21,8 @@ target_images=[pygame.transform.scale(pygame.image.load(f'Assets/duckFlying.png'
 pos_target=[]
 for i in range(2):
     pos_target.append(target_images[i].get_rect())
-
 speed=[2,-2]
-
+shot = False  #variable para revisar si hay un tiro o no
 class Hilo(threading.Thread):
     global image;
     image=0
@@ -39,13 +38,11 @@ class Hilo(threading.Thread):
         mouse_pos = pygame.mouse.get_pos()
         print(mouse_pos) 
         screen.blit(target_images[image],pos_target[1])
-        
         pos_target[1]=pos_target[1].move(speed)
         if pos_target[1].left < 0 or pos_target[1].right > WIDTH:
             speed[0] = -speed[0]
         if pos_target[1].top < 0 or pos_target[1].bottom > HEIGHT -200:
-            speed[1] = -speed[1]
-            
+            speed[1] = -speed[1]         
         # pos_target[1].center= self.lastTargetX, self.lastTargetY
         # if pos_target[1][0] < 800 :
         #     if pos_target[1][1]>0:
@@ -58,7 +55,6 @@ class Hilo(threading.Thread):
         #     self.lastTargetY+=2
         #     self.lastTargetX+=1
     
-
 def show_gun():
     mouse_pos= pygame.mouse.get_pos()
     gun_point= (WIDTH/2 , HEIGHT-200)
@@ -67,7 +63,6 @@ def show_gun():
         slope=(mouse_pos[1]-gun_point[1])/(mouse_pos[0]-gun_point[0])
     else:
         slope=-10000000
-    
     angle=math.atan(slope)
     rotation=math.degrees(angle)
     # if mouse_pos[0]<WIDTH/2:
@@ -84,14 +79,10 @@ def show_gun():
 
 def show_ducks(duck,lastTargetX,lastTargetY):
     coords_list=[]
-    
-    
     pos_target[1].center= lastTargetX, lastTargetY
     screen.blit(target_images[0],pos_target[1])
-    
     print(lastTargetX)
-    pygame.display.update()
-    
+    pygame.display.update() 
     # for i in range(5):
     #     coords_list.append([lastTargetX,lastTargetY])
     #     lastTargetX+=150    
@@ -104,21 +95,25 @@ def show_ducks(duck,lastTargetX,lastTargetY):
     #     coords_list[0][1]-=1
     #     print(coords_list[0][1])
     
-    
+def _check_hit(target, _pos_target):
+    mouse_pos = pygame.mouse.get_pos()
+    for i in range(len(target)):
+        for j in range(len(target[i])):
+            if target[i][j].collidepoint(mouse_pos):
+                _pos_target[i].pop(j) 
+    return _pos_target       
 
-run = True 
+run = True
 lastTargetY=700
 lastTargetX=150
 duck=Hilo(1,lastTargetX,lastTargetY)
 duck.start()
 while run:
     timer.tick(fps)
-
     screen.fill('black')
     screen.blit(bg,(0,0))
     screen.blit(banner,(0,HEIGHT-200))
     show_gun()
-    
     ducks_list=[]
     duck.run()
     # for i in range(5):
@@ -129,6 +124,5 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run =False
-    
     pygame.display.update()
 pygame.quit()
