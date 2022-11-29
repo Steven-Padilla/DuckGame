@@ -35,16 +35,13 @@ class Hilo(threading.Thread):
         pos_target[1][1]=self.lastTargetY -200
 
     def run(self):
-        mouse_pos = pygame.mouse.get_pos()
-        print(mouse_pos) 
         screen.blit(target_images[image],pos_target[1])
         pos_target[1]=pos_target[1].move(speed)
         if pos_target[1].left < 0 or pos_target[1].right > WIDTH:
             speed[0] = -speed[0]
         if pos_target[1].top < 0 or pos_target[1].bottom > HEIGHT -200:
             speed[1] = -speed[1] 
-            
-           
+  
         # pos_target[1].center= self.lastTargetX, self.lastTargetY
         # if pos_target[1][0] < 800 :
         #     if pos_target[1][1]>0:
@@ -79,12 +76,12 @@ def show_gun():
     # else:
 
 
-def show_ducks(duck,lastTargetX,lastTargetY):
-    coords_list=[]
-    pos_target[1].center= lastTargetX, lastTargetY
-    screen.blit(target_images[0],pos_target[1])
-    print(lastTargetX)
-    pygame.display.update() 
+# def show_ducks(duck,lastTargetX,lastTargetY):
+#     coords_list=[]
+#     pos_target[1].center= lastTargetX, lastTargetY
+#     screen.blit(target_images[0],pos_target[1])
+#     print(lastTargetX)
+#     pygame.display.update() 
     # for i in range(5):
     #     coords_list.append([lastTargetX,lastTargetY])
     #     lastTargetX+=150    
@@ -102,7 +99,8 @@ def _check_hit(target, _pos_target):
     for i in range(len(target)):
         for j in range(len(target[i])):
             if target[i][j].collidepoint(mouse_pos):
-                _pos_target[i].pop(j) 
+                # _pos_target[i].pop(j) 
+                print('tiro')
     return _pos_target       
 
 run = True
