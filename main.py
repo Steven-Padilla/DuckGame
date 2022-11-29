@@ -36,11 +36,8 @@ class Hilo(threading.Thread):
         self.image=0
         self.speed=[1,-2]
 
-
     def run(self):
         self.target_rect=pygame.Rect((pos_target[1][0],pos_target[1][1]),(100,100) )
-        # print(f'Retangulo: {self.target_rect}')
-        # print(f'Imagen: {pos_target[1]}')
         screen.blit(target_images[self.image],pos_target[1])
         pos_target[1]=pos_target[1].move(self.speed)
         print(pos_target[1])
@@ -49,7 +46,6 @@ class Hilo(threading.Thread):
         if pos_target[1].top < 0 or pos_target[1].bottom > HEIGHT -200:
             self.speed[1] = -self.speed[1]
 
-    
     def hit(self):
         shooted = _check_hit(self.target_rect)
         if shooted:
@@ -57,9 +53,7 @@ class Hilo(threading.Thread):
             self.image=1
             mutex.acquire()
             mutex.release()
-        
-
-                
+            
             # if pos_target[1][1] >450:
                 
         # pos_target[1].center= self.lastTargetX, self.lastTargetY
@@ -84,8 +78,6 @@ def show_gun():
         slope=-10000000
     angle=math.atan(slope)
     rotation=math.degrees(angle)
-    # if mouse_pos[0]<WIDTH/2:
-    #     gun_aux=pygame.transform.flip(gun, True, False)
     if mouse_pos[1] < 600 :
         if mouse_pos[0]< WIDTH/2:
             screen.blit(pygame.transform.rotate(gun,90-rotation),(WIDTH/2-100, HEIGHT-350))
@@ -152,7 +144,5 @@ while run:
             mouse_position = pygame.mouse.get_pos()
             if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):
                 duck.hit()
-            # else:
-
     pygame.display.update()
 pygame.quit()
