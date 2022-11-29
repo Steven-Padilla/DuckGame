@@ -118,7 +118,7 @@ while run:
     show_gun()
     ducks_list=[]
     duck.run()
-    if shot:
+    if shot: #Evalua si se hizo el disparo
        shooted = _check_hit(duck, pos_target)
        shot = False
     # for i in range(5):
@@ -129,7 +129,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run =False
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  #Detecta la posicion del mouse cuando hace click
             mouse_position = pygame.mouse.get_pos()
             if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):
                 shot = True
