@@ -40,22 +40,28 @@ class Hilo(threading.Thread):
         self.target_rect=pygame.Rect((pos_target[1][0],pos_target[1][1]),(100,100) )
         screen.blit(target_images[self.image],pos_target[1])
         pos_target[1]=pos_target[1].move(self.speed)
-        print(pos_target[1])
+        # print(pos_target[1])
         if pos_target[1].left < 0 or pos_target[1].right > WIDTH:
             self.speed[0] = -self.speed[0]
         if pos_target[1].top < 0 or pos_target[1].bottom > HEIGHT -200:
             self.speed[1] = -self.speed[1]
+            
 
+    def _revive(self): 
+        print('revive')
+        mutex.release()
+             
     def hit(self):
-        shooted = _check_hit(self.target_rect)
+        shooted = _check_hit(self.target_rect)    
         if shooted:
             self.speed=[0,4]
             self.image=1
             mutex.acquire()
-            mutex.release()
+            if pos_target[1]  ==  HEIGHT - 210:
+                print('touch grass')
+                print(threading.active_count())  
+                return self._revive()    
             
-            # if pos_target[1][1] >450:
-                
         # pos_target[1].center= self.lastTargetX, self.lastTargetY
         # if pos_target[1][0] < 800 :
         #     if pos_target[1][1]>0:
