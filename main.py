@@ -9,6 +9,10 @@ aux = 0
 pygame.init()
 mixer.init()
 piu=mixer.Sound('Assets/piu(1).mp3')
+
+# mixer.music.load('Assets/gogoDance.mp3')
+# mixer.music.set_volume(0.2)
+# mixer.music.play()
 fps = 30
 timer = pygame.time.Clock()
 font = pygame.font.Font('freesansbold.ttf', 32)
