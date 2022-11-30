@@ -1,11 +1,14 @@
 import pygame
 import math
 import threading
+from pygame import mixer
 # Variable for thread
 mutex = threading.Lock()
 aux = 0
 # variables for pygame
 pygame.init()
+mixer.init()
+piu=mixer.Sound('Assets/piu(1).mp3')
 fps = 30
 timer = pygame.time.Clock()
 font = pygame.font.Font('freesansbold.ttf', 32)
@@ -57,6 +60,7 @@ class Hilo(threading.Thread):
 
     def hit(self):
         shooted = _check_hit(self.target_rect)
+       
         if mutex.locked() is False:
             if shooted:
                 self._alive = False
@@ -112,8 +116,9 @@ while run:
             run = False
         # Detecta la posicion del mouse cuando hace click
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            piu.play()
             mouse_position = pygame.mouse.get_pos()
-            if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):
+            if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):   
                 duck.hit()
     pygame.display.update()
 pygame.quit()
