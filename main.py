@@ -59,11 +59,12 @@ class Hilo(threading.Thread):
 
     def hit(self):
         shooted = _check_hit(self.target_rect)
-        if shooted:
-            self._alive = False
-            self.speed = [0, 4]
-            self.image = 1
-            mutex.acquire()
+        if mutex.locked() is False:
+            if shooted:
+                self._alive = False
+                self.speed = [0, 4]
+                self.image = 1
+                mutex.acquire()
 
 def show_gun():
     mouse_pos = pygame.mouse.get_pos()
@@ -85,14 +86,12 @@ def show_gun():
         if clicks[0]:
             pygame.draw.circle(screen, 'red', mouse_pos, 8)
 
-
 def _check_hit(target):
     flag = False
     mouse_pos = pygame.mouse.get_pos()
     if target.collidepoint(mouse_pos):
         flag = True
     return flag
-
 
 run = True
 lastTargetY = 700
