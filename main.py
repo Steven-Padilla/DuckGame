@@ -21,8 +21,6 @@ pos_target = []
 for i in range(2):
     pos_target.append(target_images[i].get_rect())
 shot = False  # variable para revisar si hay un tiro o no
-
-
 class Hilo(threading.Thread):
     global speed
     global image
