@@ -1,6 +1,8 @@
+import time
 import pygame
 import math
 import threading
+import random
 from pygame import mixer
 # Variable for thread
 mutex = threading.Lock()
@@ -41,12 +43,13 @@ class Hilo(threading.Thread):
         pos_target[1][0] = self.lastTargetX
         pos_target[1][1] = self.lastTargetY - 200
         self.image = 0
-        self.speed = [1, -2]
+        varX = random.randint(-3,5)
+        varY = random.randint(1,6)
+        self.speed = [varX, varY]
         self._alive = True
 
     def run(self):
-        self.target_rect = pygame.Rect(
-            (pos_target[1][0], pos_target[1][1]), (100, 100))
+        self.target_rect = pygame.Rect((pos_target[1][0], pos_target[1][1]), (100, 100))
         screen.blit(target_images[self.image], pos_target[1])
         pos_target[1] = pos_target[1].move(self.speed)
         if pos_target[1].left < 0 or pos_target[1].right > WIDTH:
@@ -59,16 +62,17 @@ class Hilo(threading.Thread):
 
     def _revive(self):
         self.image = 0
-        self.speed = [2, -2]
+        varX = random.randint(-3,5)
+        varY = random.randint(1,6)
+        self.speed = [varX, varY]
         mutex.release()
 
     def hit(self):
         shooted = _check_hit(self.target_rect)
-       
         if mutex.locked() is False:
             if shooted:
                 self._alive = False
-                self.speed = [0, 4]
+                self.speed = [0, 6]
                 self.image = 1
                 mutex.acquire()
 
@@ -100,18 +104,24 @@ def _check_hit(target):
     return flag
 
 run = True
+spawnX = random.randint(0,800)
+# spawnY = random.randint(0,700)
 lastTargetY = 700
-lastTargetX = 150
+lastTargetX = spawnX
 duck = Hilo(1, lastTargetX, lastTargetY)
-duck.start()
+ducks_list = []
+for n in range(5): #loop ducks
+    duck = Hilo(1, lastTargetX, lastTargetY)
+    duck.start()
+    ducks_list.append(duck)
 while run:
     timer.tick(fps)
     screen.fill('black')
     screen.blit(bg, (0, 0))
     screen.blit(banner, (0, HEIGHT-200))
     show_gun()
-    ducks_list = []
-    duck.run()
+    for duck in ducks_list: 
+        duck.run()
     if shot:  # Evalua si se hizo el disparo
         shooted = _check_hit(duck, pos_target)
         shot = False
