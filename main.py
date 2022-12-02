@@ -1,20 +1,14 @@
-import time
 import pygame
 import math
 import threading
 import random
 from pygame import mixer
-# Variable for thread
-mutex = threading.Lock()
+
 aux = 0
 # variables for pygame
 pygame.init()
 mixer.init()
 piu=mixer.Sound('Assets/piu(1).mp3')
-
-# mixer.music.load('Assets/gogoDance.mp3')
-# mixer.music.set_volume(0.2)
-# mixer.music.play()
 fps = 30
 timer = pygame.time.Clock()
 font = pygame.font.Font('freesansbold.ttf', 32)
@@ -27,8 +21,8 @@ gun = pygame.transform.scale(pygame.image.load(f'Assets/gun.png'), (150, 150))
 target_images = [pygame.transform.scale(pygame.image.load(f'Assets/duckFlying.png'), (150, 150)),
                  pygame.transform.scale(pygame.image.load(f'Assets/duckSleeping.png'), (100, 100))]
 pos_target = []
-for i in range(2):
-    pos_target.append(target_images[i].get_rect())
+for i in range(5):
+    pos_target.append(target_images[1].get_rect())
 shot = False  # variable para revisar si hay un tiro o no
 class Hilo(threading.Thread):
     global speed
@@ -38,10 +32,11 @@ class Hilo(threading.Thread):
     def __init__(self, id, lastTargetX, lastTargetY):
         threading.Thread.__init__(self)
         self.id = id
+        self.semaphore = threading.Lock()
         self.lastTargetX = lastTargetX
         self.lastTargetY = lastTargetY
-        pos_target[1][0] = self.lastTargetX
-        pos_target[1][1] = self.lastTargetY - 200
+        pos_target[self.id][0] = self.lastTargetX
+        pos_target[self.id][1] = self.lastTargetY - 200
         self.image = 0
         varX = random.randint(-3,5)
         varY = random.randint(1,6)
@@ -49,15 +44,18 @@ class Hilo(threading.Thread):
         self._alive = True
 
     def run(self):
-        self.target_rect = pygame.Rect((pos_target[1][0], pos_target[1][1]), (100, 100))
-        screen.blit(target_images[self.image], pos_target[1])
-        pos_target[1] = pos_target[1].move(self.speed)
-        if pos_target[1].left < 0 or pos_target[1].right > WIDTH:
+        self.target_rect = pygame.Rect((pos_target[self.id][0],pos_target[self.id][1]), (100, 100))
+        screen.blit(target_images[self.image], pos_target[self.id])
+        pos_target[self.id] = pos_target[self.id].move(self.speed)
+        
+        if pos_target[self.id].left < 0 or pos_target[self.id].right > WIDTH:
             self.speed[0] = -self.speed[0]
-        if pos_target[1].top < 0 or pos_target[1].bottom > HEIGHT - 200:
+            
+        if pos_target[self.id].top < 0 or pos_target[self.id].bottom > HEIGHT - 200:
             self.speed[1] = -self.speed[1]
-        if pos_target[1].bottom >= HEIGHT - 210 and not self._alive:
-            if mutex.locked():
+            
+        if pos_target[self.id].bottom >= HEIGHT - 210 and not self._alive:
+            if self.semaphore.locked():
                 return self._revive()
 
     def _revive(self):
@@ -65,16 +63,16 @@ class Hilo(threading.Thread):
         varX = random.randint(-3,5)
         varY = random.randint(1,6)
         self.speed = [varX, varY]
-        mutex.release()
+        self.semaphore.release()
 
     def hit(self):
         shooted = _check_hit(self.target_rect)
-        if mutex.locked() is False:
+        if self.semaphore.locked() is False:
             if shooted:
                 self._alive = False
                 self.speed = [0, 6]
                 self.image = 1
-                mutex.acquire()
+                self.semaphore.acquire()
 
 def show_gun():
     mouse_pos = pygame.mouse.get_pos()
@@ -100,21 +98,18 @@ def _check_hit(target):
     flag = False
     mouse_pos = pygame.mouse.get_pos()
     if target.collidepoint(mouse_pos):
-        flag = True
+        return True
     return flag
 
 run = True
-spawnX = random.randint(0,800)
-# spawnY = random.randint(0,700)
 lastTargetY = 700
-lastTargetX = 150
-# duck = Hilo(1, lastTargetX, lastTargetY)
 ducks_list = []
 for n in range(5): #loop ducks
-    duck = Hilo(n, lastTargetX, lastTargetY)
+    spawnX = random.randint(0,800)
+    duck = Hilo(n, spawnX, lastTargetY)
+    duck.start()
     ducks_list.append(duck)
-    lastTargetX+=150
-
+    
 
 while run:
     timer.tick(fps)
@@ -122,20 +117,18 @@ while run:
     screen.blit(bg, (0, 0))
     screen.blit(banner, (0, HEIGHT-200))
     show_gun()
-    for duck in ducks_list: 
-        duck.start()
-        duck.run()
-    if shot:  # Evalua si se hizo el disparo
-        shooted = _check_hit(duck, pos_target)
-        shot = False
+    
+    for t in ducks_list:
+        t.run()
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        # Detecta la posicion del mouse cuando hace click
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             piu.play()
             mouse_position = pygame.mouse.get_pos()
             if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):   
-                duck.hit()
+                for i in ducks_list:
+                    i.hit()
     pygame.display.update()
 pygame.quit()
