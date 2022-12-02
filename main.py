@@ -114,6 +114,8 @@ for n in range(5): #loop ducks
     duck = Hilo(1, lastTargetX, lastTargetY)
     duck.start()
     ducks_list.append(duck)
+    lastTargetX+=150
+    
 while run:
     timer.tick(fps)
     screen.fill('black')
