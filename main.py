@@ -4,10 +4,10 @@ import threading
 import random
 from pygame import mixer
 
-aux = 0
 # variables for pygame
 pygame.init()
 mixer.init()
+point = 0
 piu=mixer.Sound('Assets/piu(1).mp3')
 fps = 30
 timer = pygame.time.Clock()
@@ -74,6 +74,10 @@ class Hilo(threading.Thread):
                 self.image = 1
                 self.semaphore.acquire()
 
+def draw_score():
+    point_text = font.render(f'Points: {point}', True, 'black')
+    screen.blit(point_text, (320,660))
+
 def show_gun():
     mouse_pos = pygame.mouse.get_pos()
     gun_point = (WIDTH/2, HEIGHT-200)
@@ -98,6 +102,8 @@ def _check_hit(target):
     flag = False
     mouse_pos = pygame.mouse.get_pos()
     if target.collidepoint(mouse_pos):
+        point += 10
+        print(point)
         return True
     return flag
 
@@ -117,7 +123,7 @@ while run:
     screen.blit(bg, (0, 0))
     screen.blit(banner, (0, HEIGHT-200))
     show_gun()
-    
+    draw_score()
     for t in ducks_list:
         t.run()
     
