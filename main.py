@@ -73,6 +73,7 @@ class Hilo(threading.Thread):
                 self.speed = [0, 6]
                 self.image = 1
                 self.semaphore.acquire()
+        return shooted
 
 def draw_score():
     point_text = font.render(f'Points: {point}', True, 'black')
@@ -102,8 +103,6 @@ def _check_hit(target):
     flag = False
     mouse_pos = pygame.mouse.get_pos()
     if target.collidepoint(mouse_pos):
-        point += 10
-        print(point)
         return True
     return flag
 
@@ -135,6 +134,8 @@ while run:
             mouse_position = pygame.mouse.get_pos()
             if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):   
                 for i in ducks_list:
-                    i.hit()
+                    var = i.hit()
+                    if var:
+                        point+=10
     pygame.display.update()
 pygame.quit()
