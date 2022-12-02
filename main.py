@@ -8,7 +8,7 @@ from pygame import mixer
 pygame.init()
 mixer.init()
 point = 0
-piu=mixer.Sound('Assets/piu(1).mp3')
+piu = mixer.Sound('Assets/piu(1).mp3')
 fps = 30
 timer = pygame.time.Clock()
 font = pygame.font.Font('freesansbold.ttf', 32)
@@ -23,7 +23,8 @@ target_images = [pygame.transform.scale(pygame.image.load(f'Assets/duckFlying.pn
 pos_target = []
 for i in range(5):
     pos_target.append(target_images[1].get_rect())
-shot = False  # variable para revisar si hay un tiro o no
+shot = False
+
 class Hilo(threading.Thread):
     global speed
     global image
@@ -38,30 +39,31 @@ class Hilo(threading.Thread):
         pos_target[self.id][0] = self.lastTargetX
         pos_target[self.id][1] = self.lastTargetY - 200
         self.image = 0
-        varX = random.randint(-3,5)
-        varY = random.randint(1,6)
+        varX = random.randint(-3, 5)
+        varY = random.randint(1, 6)
         self.speed = [varX, varY]
         self._alive = True
 
     def run(self):
-        self.target_rect = pygame.Rect((pos_target[self.id][0],pos_target[self.id][1]), (100, 100))
+        self.target_rect = pygame.Rect(
+            (pos_target[self.id][0], pos_target[self.id][1]), (100, 100))
         screen.blit(target_images[self.image], pos_target[self.id])
         pos_target[self.id] = pos_target[self.id].move(self.speed)
-        
+
         if pos_target[self.id].left < 0 or pos_target[self.id].right > WIDTH:
             self.speed[0] = -self.speed[0]
-            
+
         if pos_target[self.id].top < 0 or pos_target[self.id].bottom > HEIGHT - 200:
             self.speed[1] = -self.speed[1]
-            
+
         if pos_target[self.id].bottom >= HEIGHT - 210 and not self._alive:
             if self.semaphore.locked():
                 return self._revive()
 
     def _revive(self):
         self.image = 0
-        varX = random.randint(-3,5)
-        varY = random.randint(1,6)
+        varX = random.randint(-3, 5)
+        varY = random.randint(1, 6)
         self.speed = [varX, varY]
         self.semaphore.release()
 
@@ -77,7 +79,7 @@ class Hilo(threading.Thread):
 
 def draw_score():
     point_text = font.render(f'Points: {point}', True, 'black')
-    screen.blit(point_text, (320,660))
+    screen.blit(point_text, (320, 660))
 
 def show_gun():
     mouse_pos = pygame.mouse.get_pos()
@@ -109,13 +111,11 @@ def _check_hit(target):
 run = True
 lastTargetY = 700
 ducks_list = []
-for n in range(5): #loop ducks
-    spawnX = random.randint(0,800)
+for n in range(5):  # loop ducks
+    spawnX = random.randint(0, 800)
     duck = Hilo(n, spawnX, lastTargetY)
     duck.start()
     ducks_list.append(duck)
-    
-
 while run:
     timer.tick(fps)
     screen.fill('black')
@@ -125,17 +125,16 @@ while run:
     draw_score()
     for t in ducks_list:
         t.run()
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             piu.play()
             mouse_position = pygame.mouse.get_pos()
-            if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):   
-                for i in ducks_list:
-                    var = i.hit()
+            if (0 < mouse_position[0] < WIDTH) and (0 < mouse_position[1] < HEIGHT - 200):
+                for duck in ducks_list:
+                    var = duck.hit()
                     if var:
-                        point+=10
+                        point += 10
     pygame.display.update()
 pygame.quit()
