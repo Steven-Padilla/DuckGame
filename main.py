@@ -107,15 +107,15 @@ run = True
 spawnX = random.randint(0,800)
 # spawnY = random.randint(0,700)
 lastTargetY = 700
-lastTargetX = spawnX
-duck = Hilo(1, lastTargetX, lastTargetY)
+lastTargetX = 150
+# duck = Hilo(1, lastTargetX, lastTargetY)
 ducks_list = []
 for n in range(5): #loop ducks
-    duck = Hilo(1, lastTargetX, lastTargetY)
-    duck.start()
+    duck = Hilo(n, lastTargetX, lastTargetY)
     ducks_list.append(duck)
     lastTargetX+=150
-    
+
+
 while run:
     timer.tick(fps)
     screen.fill('black')
@@ -123,6 +123,7 @@ while run:
     screen.blit(banner, (0, HEIGHT-200))
     show_gun()
     for duck in ducks_list: 
+        duck.start()
         duck.run()
     if shot:  # Evalua si se hizo el disparo
         shooted = _check_hit(duck, pos_target)
