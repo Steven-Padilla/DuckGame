@@ -1,7 +1,4 @@
-import pygame
-import math
-import threading
-import random
+import pygame, math, threading, random, time
 from pygame import mixer
 
 # variables for pygame
@@ -79,7 +76,9 @@ class Hilo(threading.Thread):
 
 def draw_score():
     point_text = font.render(f'Points: {point}', True, 'black')
-    screen.blit(point_text, (320, 660))
+    text_done = font.render(f'100 points to win', True, 'black')
+    screen.blit(point_text, (320, 720))
+    screen.blit(text_done, (320,670))
 
 def show_gun():
     mouse_pos = pygame.mouse.get_pos()
@@ -105,12 +104,13 @@ def _check_hit(target):
     flag = False
     mouse_pos = pygame.mouse.get_pos()
     if target.collidepoint(mouse_pos):
-        return True
+        flag = True
     return flag
 
 run = True
 lastTargetY = 700
 ducks_list = []
+conta = 0
 for n in range(5):  # loop ducks
     spawnX = random.randint(0, 800)
     duck = Hilo(n, spawnX, lastTargetY)
@@ -136,5 +136,15 @@ while run:
                     var = duck.hit()
                     if var:
                         point += 10
+                    else:
+                        conta += 1
+                if conta > 0:
+                    if point >= 10 and conta == 5:
+                        point -= 10
+                    conta = 0
+                if point == 100:
+                    print('u won :p')
+                    time.sleep(1)
+                    pygame.quit()
     pygame.display.update()
 pygame.quit()
